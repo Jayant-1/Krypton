@@ -2,14 +2,24 @@
 app/database.py
 
 Async SQLite database engine + session factory + table creation.
-DB file stored at: research_agent.db (project root)
+DB file stored at: /app/data/research_agent.db (container) or ./research_agent.db (local)
 """
 from __future__ import annotations
+
+import os
+from pathlib import Path
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
-DATABASE_URL = "sqlite+aiosqlite:///./research_agent.db"
+# Use environment variable or default
+# In container: /app/data/research_agent.db
+# Locally: ./research_agent.db
+db_path = os.getenv("DATABASE_PATH", "./research_agent.db")
+db_dir = Path(db_path).parent
+db_dir.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
+
+DATABASE_URL = f"sqlite+aiosqlite:///{db_path}"
 
 engine = create_async_engine(
     DATABASE_URL,

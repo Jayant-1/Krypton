@@ -27,7 +27,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user for security BEFORE copying files
-RUN useradd -m -u 1000 appuser
+RUN useradd -m -u 1000 appuser && \
+    mkdir -p /app/data && \
+    chown -R appuser:appuser /app
 
 # Copy Python dependencies from builder to app-accessible location
 COPY --from=builder --chown=appuser:appuser /tmp/local /app/.local
@@ -40,7 +42,8 @@ COPY --chown=appuser:appuser requirements.txt .
 ENV PATH=/app/.local/bin:$PATH \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PORT=8080
+    PORT=8080 \
+    DATABASE_PATH=/app/data/research_agent.db
 
 # Switch to non-root user
 USER appuser
@@ -52,5 +55,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Expose port
 EXPOSE 8080
 
-# Run FastAPI with uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+# Run FastAPI with uvicorn - verbose logging for debugging
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--log-level", "info"]

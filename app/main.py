@@ -4,6 +4,7 @@ app/main.py — FastAPI application entry point
 from __future__ import annotations
 
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -32,7 +33,7 @@ async def lifespan(app: FastAPI):
     logger.info("🚀  Research Assistant AI Agent — Backend")
     logger.info("    Version  : %s", cfg.app_version)
     logger.info("    Env      : %s", cfg.app_env)
-    logger.info("    DB       : research_agent.db (SQLite)")
+    logger.info("    DB       : %s", os.getenv("DATABASE_PATH", "./research_agent.db"))
     logger.info("    Cache    : in-memory TTL only (disk cache removed)")
     logger.info("    Gemini   : %s", "✅ configured" if cfg.gemini_api_key else "❌ NOT configured")
     logger.info("    S2 Key   : %s", "✅ configured" if cfg.semantic_scholar_api_key else "⚪ using OpenAlex (free)")
@@ -40,6 +41,7 @@ async def lifespan(app: FastAPI):
     logger.info("=" * 60)
     yield
     logger.info("Server shutting down.")
+
 
 
 cfg = get_settings()

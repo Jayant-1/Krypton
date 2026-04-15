@@ -11,6 +11,7 @@ services:
     environment:
       - APP_ENV=development
       - SECRET_KEY=dev-insecure-key-please-change-in-production
+      - DATABASE_PATH=/app/data/research_agent.db
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - SEMANTIC_SCHOLAR_API_KEY=${SEMANTIC_SCHOLAR_API_KEY}
       - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
@@ -20,7 +21,7 @@ services:
       - GEMINI_MODEL=gemini-2.5-flash
     volumes:
       - ./app:/app/app
-      - ./research_agent.db:/app/research_agent.db
+      - ./data:/app/data
     networks:
       - krypton-network
     healthcheck:
