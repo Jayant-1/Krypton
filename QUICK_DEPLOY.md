@@ -21,8 +21,11 @@ GitHub Repository: ____________________________
 ### 1. Install Required Files for back4app
 
 ```bash
-# Already created in your repo:
-# ✅ Procfile - tells back4app how to run your app
+# Backend Configuration Summary:
+# ✅ Branch: main
+# ✅ Root Directory: ./
+# ✅ Port: 8080
+# ✅ Procfile - tells back4app to run FastAPI on port 8080
 # ✅ runtime.txt - specifies Python 3.11.5
 # ✅ requirements.txt - all dependencies
 ```
