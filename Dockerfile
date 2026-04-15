@@ -10,9 +10,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install Python dependencies
+# Copy requirements and install Python dependencies to /tmp/local
 COPY requirements.txt .
-RUN pip install --user --no-cache-dir -r requirements.txt
+RUN pip install --user --no-cache-dir -r requirements.txt && \
+    mv /root/.local /tmp/local
 
 
 # Stage 2: Runtime (minimal production image)
@@ -25,23 +26,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy Python dependencies from builder
-COPY --from=builder /root/.local /root/.local
+# Create non-root user for security BEFORE copying files
+RUN useradd -m -u 1000 appuser
+
+# Copy Python dependencies from builder to app-accessible location
+COPY --from=builder --chown=appuser:appuser /tmp/local /app/.local
 
 # Copy application code
-COPY app/ ./app/
-COPY requirements.txt .
+COPY --chown=appuser:appuser app/ ./app/
+COPY --chown=appuser:appuser requirements.txt .
 
-# Set environment variables
-ENV PATH=/root/.local/bin:$PATH \
+# Set environment variables with app-local path
+ENV PATH=/app/.local/bin:$PATH \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PORT=8080
 
-# Create non-root user for security
-RUN useradd -m -u 1000 appuser && \
-    chown -R appuser:appuser /app
-
+# Switch to non-root user
 USER appuser
 
 # Health check
