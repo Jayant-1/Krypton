@@ -1,0 +1,53 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+*.cover
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment files (don't include in image)
+.env
+.env.local
+.env.*.local
+
+# Frontend (not needed for backend container)
+frontend/node_modules
+frontend/dist
+frontend/.env*
+
+# Database (SQLite - will be mounted as volume)
+*.db
+
+# Documentation
+*.md
+docs/
+
+# Other
+.codex
+research_agent.db
+cache/

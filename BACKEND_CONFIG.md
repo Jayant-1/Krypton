@@ -2,14 +2,14 @@
 
 ## Deployment Settings
 
-| Setting | Value |
-|---------|-------|
-| **Platform** | back4app |
-| **Branch** | main |
-| **Root Directory** | ./ |
-| **Port** | 8080 |
-| **Runtime** | Python 3.11.5 |
-| **Server** | FastAPI (uvicorn) |
+| Setting            | Value             |
+| ------------------ | ----------------- |
+| **Platform**       | back4app          |
+| **Branch**         | main              |
+| **Root Directory** | ./                |
+| **Port**           | 8080              |
+| **Runtime**        | Python 3.11.5     |
+| **Server**         | FastAPI (uvicorn) |
 
 ---
 
@@ -20,6 +20,7 @@ web: uvicorn app.main:app --host 0.0.0.0 --port 8080
 ```
 
 ### What This Means
+
 - **web**: Process type (required by back4app)
 - **uvicorn**: ASGI server for FastAPI
 - **app.main:app**: Python module and FastAPI instance
@@ -84,6 +85,7 @@ curl https://yourapp.back4app.io/api/health
 ```
 
 Expected response:
+
 ```json
 {
   "status": "OK",
@@ -117,19 +119,82 @@ Expected response:
 ## Troubleshooting
 
 **Backend won't start:**
+
 - Check back4app Logs for Python errors
 - Verify all imports in `app/` are correct
 - Check requirements.txt has all dependencies
 
 **Can't reach backend from Vercel:**
+
 - Verify domain: `https://yourapp.back4app.io`
 - Check CORS: `ALLOWED_ORIGINS` must include Vercel URL
 - Check frontend: `VITE_API_BASE_URL` must match exactly
 
 **Port 8080 not working:**
+
 - Don't override in environment
 - Use fixed port in Procfile (not `$PORT`)
 - Ensure back4app recognizes the Procfile
+
+---
+
+## Docker Configuration
+
+### Files Included
+
+- **Dockerfile** — Multi-stage production build (optimized for size)
+- **docker-compose.yml** — Local development setup
+- **.dockerignore** — Excludes unnecessary files from build
+
+### Build Locally
+
+```bash
+# Build the Docker image
+docker build -t krypton-backend:latest .
+
+# Run with docker-compose (recommended)
+docker-compose up -d
+
+# View logs
+docker-compose logs -f backend
+
+# Stop container
+docker-compose down
+```
+
+### Docker Image Details
+
+```dockerfile
+# Base: Python 3.11.5-slim
+# Multi-stage: Builder + Runtime (smallest image)
+# Port: 8080
+# User: non-root (appuser)
+# Health check: `/api/health` endpoint
+```
+
+### Environment Variables in Docker
+
+Set in `docker-compose.yml` or via CLI:
+
+```bash
+docker run -e APP_ENV=production \
+           -e SECRET_KEY=your_secret_key \
+           -e GEMINI_API_KEY=your_key \
+           -p 8080:8080 \
+           krypton-backend:latest
+```
+
+### Volume Mounts
+
+For persistent data and development:
+
+```bash
+# SQLite database
+-v ./research_agent.db:/app/research_agent.db
+
+# Hot-reload for development
+-v ./app:/app/app
+```
 
 ---
 
