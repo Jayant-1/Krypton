@@ -48,12 +48,12 @@ ENV PATH=/app/packages/bin:$PATH \
 # Switch to non-root user
 USER appuser
 
-# Health check - uses PORT env var if available, otherwise 8080
+# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD sh -c 'curl -f http://localhost:${PORT:-8080}/api/health || exit 1'
+    CMD curl -f http://localhost:8080/api/health || exit 1
 
-# Expose port (8080 by default, but will use PORT env var if set by back4app)
+# Expose port
 EXPOSE 8080
 
-# Run FastAPI with uvicorn - uses PORT env var if set (back4app), otherwise defaults to 8080
-CMD sh -c 'uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080} --log-level info'
+# Run FastAPI with uvicorn on port 8080
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--log-level", "info"]
