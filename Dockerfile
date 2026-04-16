@@ -42,7 +42,7 @@ ENV PATH=/app/packages/bin:$PATH \
     PYTHONPATH=/app/packages:$PYTHONPATH \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PORT=8080 \
+    PORT=8000 \
     DATABASE_PATH=/app/data/research_agent.db
 
 # Switch to non-root user
@@ -50,10 +50,10 @@ USER appuser
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8080/api/health || exit 1
+    CMD sh -c 'curl -f http://localhost:${PORT:-8000}/api/health || exit 1'
 
 # Expose port
-EXPOSE 8080
+EXPOSE 8000
 
-# Run FastAPI with uvicorn on port 8080
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--log-level", "info"]
+# Run FastAPI with uvicorn using platform PORT (defaults to 8000 for back4app)
+CMD sh -c 'uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --log-level info'
