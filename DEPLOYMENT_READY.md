@@ -9,24 +9,28 @@
 ## Issues Identified & Resolved
 
 ### 1. ✅ Dockerfile Port Bug (FIXED)
+
 - **Problem**: CMD hardcoded to port 8000 (then 8080)
 - **Solution**: Now uses `${PORT:-8080}` environment variable
 - **Benefit**: Works with both back4app and local development
 - **Commit**: `7e5e8f1`
 
 ### 2. ✅ back4app Health Check Failure (FIXED)
+
 - **Problem**: back4app checks port 8000, but app ran on 8080
 - **Solution**: Added `${PORT:-8080}` to respect back4app's PORT env var
 - **Benefit**: Health check now passes during back4app deployment
 - **Commit**: `7e5e8f1`
 
 ### 3. ✅ Port Inconsistency (FIXED)
+
 - **Problem**: Multiple hardcoded ports caused confusion
 - **Solution**: Unified approach using environment variable with fallback
 - **Benefit**: Single source of truth for port configuration
 - **Commit**: `7e5e8f1`
 
 ### 4. ✅ CORS Misconfiguration (DOCUMENTED)
+
 - **Problem**: `ALLOWED_ORIGINS` still placeholder `https://yourapp.vercel.app`
 - **Solution**: Helper script `cors-fix.sh` provided to configure
 - **Status**: Ready for CORS setup (needs Vercel URL)
@@ -36,24 +40,31 @@
 ## Current Configuration
 
 ### Procfile (back4app startup)
+
 ```
 web: uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}
 ```
+
 ✅ Uses PORT env var set by back4app, fallback to 8080
 
 ### Dockerfile CMD
+
 ```
 CMD sh -c 'uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080} --log-level info'
 ```
+
 ✅ Uses PORT env var, fallback to 8080
 
 ### Dockerfile HEALTHCHECK
+
 ```
 CMD sh -c 'curl -f http://localhost:${PORT:-8080}/api/health || exit 1'
 ```
+
 ✅ Checks correct port (PORT or 8080)
 
 ### Frontend Configuration
+
 - **Local**: `http://localhost:8080` ✅
 - **Production**: `https://krypton-ryngvlpb.b4a.run` ✅
 
@@ -62,12 +73,15 @@ CMD sh -c 'curl -f http://localhost:${PORT:-8080}/api/health || exit 1'
 ## Deployment Workflow
 
 ### Step 1: Push to GitHub
+
 ```bash
 git push origin main
 ```
+
 ✅ Ready - 3 new commits waiting to push
 
 ### Step 2: back4app Deployment
+
 1. Go to back4app dashboard
 2. back4app detects Dockerfile in repo
 3. back4app builds image
@@ -77,6 +91,7 @@ git push origin main
 7. Deployment succeeds ✅
 
 ### Step 3: Vercel Deployment (when ready)
+
 1. Push to GitHub (same repo)
 2. Go to Vercel dashboard
 3. Import GitHub repository
@@ -84,6 +99,7 @@ git push origin main
 5. Deploy ✅
 
 ### Step 4: Fix CORS (when Vercel URL obtained)
+
 1. Get Vercel URL (e.g., `https://krypton-abc123.vercel.app`)
 2. Run: `./cors-fix.sh https://krypton-abc123.vercel.app`
 3. Update back4app ALLOWED_ORIGINS env var
@@ -93,23 +109,23 @@ git push origin main
 
 ## Files Modified
 
-| File | Change | Commit |
-|------|--------|--------|
-| Procfile | `${PORT:-8080}` | 7e5e8f1 |
-| Dockerfile CMD | `${PORT:-8080}` | 7e5e8f1 |
-| Dockerfile HEALTHCHECK | `${PORT:-8080}` | 7e5e8f1 |
-| Documentation | Updated for clarity | e674d14 |
+| File                   | Change              | Commit  |
+| ---------------------- | ------------------- | ------- |
+| Procfile               | `${PORT:-8080}`     | 7e5e8f1 |
+| Dockerfile CMD         | `${PORT:-8080}`     | 7e5e8f1 |
+| Dockerfile HEALTHCHECK | `${PORT:-8080}`     | 7e5e8f1 |
+| Documentation          | Updated for clarity | e674d14 |
 
 ---
 
 ## What Works Now ✅
 
-| Scenario | Port | Status |
-|----------|------|--------|
-| Local development | 8080 | ✅ Works |
-| Docker compose | 8080 | ✅ Works |
-| back4app deployment | $PORT (8000 or set value) | ✅ Works |
-| Health checks | Automatic | ✅ Works |
+| Scenario            | Port                       | Status   |
+| ------------------- | -------------------------- | -------- |
+| Local development   | 8080                       | ✅ Works |
+| Docker compose      | 8080                       | ✅ Works |
+| back4app deployment | $PORT (8000 or set value)  | ✅ Works |
+| Health checks       | Automatic                  | ✅ Works |
 | Frontend connection | 8080 (local) or 443 (prod) | ✅ Works |
 
 ---
@@ -177,6 +193,7 @@ curl https://krypton-ryngvlpb.b4a.run/api/health
 ## Helper Scripts
 
 1. **cors-fix.sh** - Automated CORS configuration
+
    ```bash
    ./cors-fix.sh https://your-vercel-url.vercel.app
    ```
@@ -196,13 +213,14 @@ curl https://krypton-ryngvlpb.b4a.run/api/health
 ✅ **Health Checks**: Automatically use correct port  
 ✅ **Documentation**: Comprehensive guides provided  
 ✅ **Helper Scripts**: Automation for common tasks  
-✅ **Git History**: Clear commit messages  
+✅ **Git History**: Clear commit messages
 
 ---
 
 ## Ready to Deploy?
 
 ### Checklist
+
 - [x] Procfile configured for PORT environment variable
 - [x] Dockerfile runs on PORT environment variable
 - [x] Healthcheck verifies correct port
@@ -213,11 +231,13 @@ curl https://krypton-ryngvlpb.b4a.run/api/health
 - [x] All commits staged
 
 ### Next Action
+
 ```bash
 git push origin main
 ```
 
 Then deploy on:
+
 1. back4app - Auto-detects Dockerfile
 2. Vercel - Connect GitHub repo
 
@@ -226,12 +246,14 @@ Then deploy on:
 ## Deployment Environment Setup
 
 ### back4app Settings (after push)
+
 - No manual port configuration needed
 - PORT env var handled automatically
 - Just ensure ALLOWED_ORIGINS is set for CORS
 - Redeploy after any env var changes
 
 ### Vercel Settings (when ready)
+
 - Set `VITE_API_BASE_URL=https://krypton-ryngvlpb.b4a.run`
 - Auto-builds on git push
 - No port configuration needed (uses HTTPS 443)
@@ -240,12 +262,12 @@ Then deploy on:
 
 ## Risk Assessment
 
-| Item | Risk | Mitigation |
-|------|------|-----------|
-| Port not set | Low | Defaults to 8080 |
-| CORS errors | Medium | cors-fix.sh helper provided |
-| Health check fails | Low | Respects PORT env var |
-| Local dev broken | Low | Works same as before |
+| Item               | Risk   | Mitigation                  |
+| ------------------ | ------ | --------------------------- |
+| Port not set       | Low    | Defaults to 8080            |
+| CORS errors        | Medium | cors-fix.sh helper provided |
+| Health check fails | Low    | Respects PORT env var       |
+| Local dev broken   | Low    | Works same as before        |
 
 ---
 
@@ -275,7 +297,7 @@ After deployment, verify:
 ✅ `curl https://krypton-ryngvlpb.b4a.run/api/health` returns 200  
 ✅ Vercel frontend deployed  
 ✅ Frontend can reach backend (no CORS errors)  
-✅ API calls return correct responses  
+✅ API calls return correct responses
 
 ---
 

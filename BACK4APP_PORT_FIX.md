@@ -10,6 +10,7 @@
 ## What Went Wrong
 
 Back4app deployment logs showed:
+
 ```
 trying to hit the 8000 port using http
 it looks that no process is listening to the 8000 port using http
@@ -17,7 +18,8 @@ app did not turn healthy after several checks
 deployment failed
 ```
 
-**Why**: 
+**Why**:
+
 - Our Procfile/Dockerfile hardcoded port 8080
 - back4app's health check system (orchestration layer) expected the app on port 8000
 - Port mismatch → health check failed → deployment failed
@@ -29,18 +31,21 @@ deployment failed
 ### Changes Made
 
 **1. Procfile** (back4app start command)
+
 ```diff
 - web: uvicorn app.main:app --host 0.0.0.0 --port 8080
 + web: uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}
 ```
 
 **2. Dockerfile** (container startup)
+
 ```diff
 - CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--log-level", "info"]
 + CMD sh -c 'uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080} --log-level info'
 ```
 
 **3. Dockerfile Healthcheck** (container health verification)
+
 ```diff
 - CMD curl -f http://localhost:8080/api/health || exit 1
 + CMD sh -c 'curl -f http://localhost:${PORT:-8080}/api/health || exit 1'
@@ -48,18 +53,19 @@ deployment failed
 
 ### How It Works Now
 
-| Scenario | PORT Variable | App Listens On | Why |
-|----------|---------------|----------------|-----|
-| **back4app** | Set to 8000 (by orchestration) | 8000 | Uses back4app's PORT |
-| **Local dev** | Not set | 8080 | Uses default fallback |
-| **Docker compose** | Not set | 8080 | Uses default fallback |
-| **Docker (explicit)** | `docker run -e PORT=9000` | 9000 | Respects explicit setting |
+| Scenario              | PORT Variable                  | App Listens On | Why                       |
+| --------------------- | ------------------------------ | -------------- | ------------------------- |
+| **back4app**          | Set to 8000 (by orchestration) | 8000           | Uses back4app's PORT      |
+| **Local dev**         | Not set                        | 8080           | Uses default fallback     |
+| **Docker compose**    | Not set                        | 8080           | Uses default fallback     |
+| **Docker (explicit)** | `docker run -e PORT=9000`      | 9000           | Respects explicit setting |
 
 ---
 
 ## Why This Works
 
 ### For back4app:
+
 1. back4app sets `PORT=8000` (or whatever port it uses)
 2. Procfile reads: `${PORT:-8080}` → expands to `${8000}` → uses 8000
 3. App listens on port 8000
@@ -67,12 +73,14 @@ deployment failed
 5. Deployment proceeds
 
 ### For Local Development:
+
 1. No PORT env var set
 2. Procfile reads: `${PORT:-8080}` → expands to `8080` (fallback)
 3. App listens on port 8080
 4. Frontend connects to localhost:8080 ✅
 
 ### For Docker Container:
+
 1. Container running with `${PORT:-8080}`
 2. If back4app sets PORT → uses that
 3. If not set → defaults to 8080
@@ -83,11 +91,13 @@ deployment failed
 ## Deployment Procedure (Updated)
 
 ### Step 1: Push to GitHub
+
 ```bash
 git push origin main
 ```
 
 ### Step 2: back4app Deployment
+
 1. Go to back4app Dashboard
 2. Settings → GitHub Repository
 3. Branch: main (or auto-connect)
@@ -100,6 +110,7 @@ git push origin main
    - Deploy if healthy ✅
 
 ### Step 3: Verify Deployment
+
 ```bash
 # Should respond with 200 OK
 curl https://krypton-ryngvlpb.b4a.run/api/health
@@ -113,9 +124,11 @@ curl https://krypton-ryngvlpb.b4a.run/api/health
 ## Environment Variables Reference
 
 ### back4app Automatically Sets:
+
 - `PORT` - The port the app should listen on (orchestration controlled)
 
 ### We Also Read:
+
 - `DATABASE_PATH` - SQLite database location
 - `ALLOWED_ORIGINS` - CORS configuration
 - `SECRET_KEY` - JWT secret
@@ -128,13 +141,13 @@ curl https://krypton-ryngvlpb.b4a.run/api/health
 
 ### All Scenarios Now Handle Correctly:
 
-| Component | Configuration | Back4app | Local Dev |
-|-----------|---------------|----------|-----------|
-| **Procfile** | `${PORT:-8080}` | ✅ Uses PORT | ✅ Uses 8080 |
-| **Dockerfile CMD** | `${PORT:-8080}` | ✅ Uses PORT | ✅ Uses 8080 |
-| **Healthcheck** | `${PORT:-8080}` | ✅ Checks PORT | ✅ Checks 8080 |
-| **Docker-compose** | Explicit 8080 | N/A | ✅ 8080 |
-| **Frontend Config** | Fixed to 8080/443 | ✅ 443 HTTPS | ✅ 8080 HTTP |
+| Component           | Configuration     | Back4app       | Local Dev      |
+| ------------------- | ----------------- | -------------- | -------------- |
+| **Procfile**        | `${PORT:-8080}`   | ✅ Uses PORT   | ✅ Uses 8080   |
+| **Dockerfile CMD**  | `${PORT:-8080}`   | ✅ Uses PORT   | ✅ Uses 8080   |
+| **Healthcheck**     | `${PORT:-8080}`   | ✅ Checks PORT | ✅ Checks 8080 |
+| **Docker-compose**  | Explicit 8080     | N/A            | ✅ 8080        |
+| **Frontend Config** | Fixed to 8080/443 | ✅ 443 HTTPS   | ✅ 8080 HTTP   |
 
 ---
 
@@ -163,6 +176,7 @@ curl http://localhost:8080/api/health
 ```
 
 **What Changed**:
+
 - Procfile: Now uses `${PORT:-8080}`
 - Dockerfile CMD: Now uses `${PORT:-8080}`
 - Dockerfile HEALTHCHECK: Now uses `${PORT:-8080}`
@@ -175,6 +189,7 @@ curl http://localhost:8080/api/health
 ### Still getting health check failure:
 
 1. **Check if PORT is being set:**
+
    ```bash
    # In back4app logs, look for:
    # - PORT environment variable value
@@ -182,12 +197,14 @@ curl http://localhost:8080/api/health
    ```
 
 2. **Verify Procfile is correct:**
+
    ```bash
    cat Procfile
    # Should show: web: uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}
    ```
 
 3. **Verify Dockerfile is correct:**
+
    ```bash
    grep "CMD sh -c" Dockerfile
    # Should show the sh -c version with ${PORT:-8080}
@@ -203,14 +220,14 @@ curl http://localhost:8080/api/health
 
 ## What's Fixed Now ✅
 
-| Item | Status |
-|------|--------|
-| Port hardcoding issue | ✅ FIXED |
-| back4app health check failure | ✅ FIXED |
-| Local development still works | ✅ VERIFIED |
-| CORS configuration | ✅ Waiting for Vercel URL |
-| Docker container compatibility | ✅ IMPROVED |
-| Environment variable support | ✅ ADDED |
+| Item                           | Status                    |
+| ------------------------------ | ------------------------- |
+| Port hardcoding issue          | ✅ FIXED                  |
+| back4app health check failure  | ✅ FIXED                  |
+| Local development still works  | ✅ VERIFIED               |
+| CORS configuration             | ✅ Waiting for Vercel URL |
+| Docker container compatibility | ✅ IMPROVED               |
+| Environment variable support   | ✅ ADDED                  |
 
 ---
 
@@ -233,6 +250,7 @@ curl http://localhost:8080/api/health
 ## Next Steps
 
 1. **Deploy to back4app:**
+
    ```bash
    git push origin main
    # back4app auto-deploys or manually trigger in dashboard
@@ -243,6 +261,7 @@ curl http://localhost:8080/api/health
    - Should see: "Health check passed" or similar success message
 
 3. **Verify backend:**
+
    ```bash
    curl https://krypton-ryngvlpb.b4a.run/api/health
    # Expected: 200 OK with JSON response
