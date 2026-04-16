@@ -14,6 +14,7 @@
 If you want to quickly test whether CORS is the issue, you can temporarily allow all origins:
 
 ### Option A: Emergency Fix (Development Only)
+
 **File**: `.env.production`
 
 ```yaml
@@ -24,6 +25,7 @@ ALLOWED_ORIGINS=*
 ⚠️ **WARNING**: This allows ANY origin. Only for testing!
 
 ### Option B: Proper Fix (Production)
+
 **File**: `.env.production`
 
 ```yaml
@@ -36,11 +38,13 @@ ALLOWED_ORIGINS=https://your-vercel-url.vercel.app
 ## Find Your Vercel Frontend URL
 
 ### Step 1: Check Vercel Dashboard
+
 1. Go to https://vercel.com/dashboard
 2. Look for project from GitHub: `Jayant-1/Krypton`
 3. Copy the URL shown (usually `https://krypton-*.vercel.app`)
 
 ### Step 2: If Not Yet Deployed
+
 1. Push code: `git push origin main`
 2. Go to https://vercel.com/new
 3. Import GitHub repo
@@ -52,6 +56,7 @@ ALLOWED_ORIGINS=https://your-vercel-url.vercel.app
 ## Applying the Fix
 
 ### Using the Helper Script
+
 ```bash
 # Make sure in Krypton directory
 cd /media/jayant/Jayant/Code/Work\ Station/Hackathon/Krypton
@@ -64,16 +69,19 @@ cd /media/jayant/Jayant/Code/Work\ Station/Hackathon/Krypton
 ```
 
 This will:
+
 - Update .env.production
 - Show you next steps
 
 ### Manual Fix
+
 1. Open `.env.production`
 2. Find: `ALLOWED_ORIGINS=https://yourapp.vercel.app`
 3. Replace with your actual URL
 4. Save
 
 ### Deploy to back4app
+
 1. Go to back4app Dashboard
 2. Settings → Environment Variables
 3. Update: `ALLOWED_ORIGINS=https://your-vercel-url.vercel.app`
@@ -99,15 +107,19 @@ This will:
 ## Common Issues & Solutions
 
 ### "CORS header 'Access-Control-Allow-Origin' missing"
+
 → Likely ALLOWED_ORIGINS doesn't have your frontend URL
 
 ### "Status code: 400"
+
 → Backend received request but CORS header blocked it
 
 ### "Status code: (null)"
+
 → Network-level CORS error, frontend not allowed to reach backend
 
 ### "Backend offline on port 8000"
+
 → **FIXED** ✅ - Dockerfile now starts on port 8080
 
 ---
@@ -125,21 +137,27 @@ This will:
 ## What Each Component Does
 
 ### Frontend (.env.production)
+
 ```
 VITE_API_BASE_URL=https://krypton-ryngvlpb.b4a.run
 ```
+
 → Frontend knows where backend is
 
 ### Backend (app/main.py)
+
 ```python
 allow_origins=cfg.allowed_origins.split(",")
 ```
+
 → Backend checks if frontend domain is allowed
 
 ### Environment Variable
+
 ```
 ALLOWED_ORIGINS=https://your-vercel-url.vercel.app
 ```
+
 → List of allowed frontend domains (comma-separated for multiple)
 
 ---
@@ -147,21 +165,25 @@ ALLOWED_ORIGINS=https://your-vercel-url.vercel.app
 ## Example Configurations
 
 ### Single Frontend (Most Common)
+
 ```
 ALLOWED_ORIGINS=https://krypton-frontend.vercel.app
 ```
 
 ### Multiple Frontends
+
 ```
 ALLOWED_ORIGINS=https://krypton-frontend.vercel.app,https://backup-frontend.vercel.app
 ```
 
 ### Development + Production
+
 ```
 ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000,https://krypton-frontend.vercel.app
 ```
 
 ### Emergency Testing (Temporary Only)
+
 ```
 ALLOWED_ORIGINS=*
 ```
@@ -170,14 +192,14 @@ ALLOWED_ORIGINS=*
 
 ## Summary of Port Changes
 
-| Component | Value | Status |
-|-----------|-------|--------|
-| Dockerfile CMD | 8080 | ✅ Fixed |
-| HEALTHCHECK | 8080 | ✅ Fixed |
-| EXPOSE | 8080 | ✅ Fixed |
-| Procfile | 8080 | ✅ Verified |
-| frontend/.env | 8080 | ✅ Verified |
-| backend/.env | 8080 | ✅ Default |
+| Component      | Value | Status      |
+| -------------- | ----- | ----------- |
+| Dockerfile CMD | 8080  | ✅ Fixed    |
+| HEALTHCHECK    | 8080  | ✅ Fixed    |
+| EXPOSE         | 8080  | ✅ Fixed    |
+| Procfile       | 8080  | ✅ Verified |
+| frontend/.env  | 8080  | ✅ Verified |
+| backend/.env   | 8080  | ✅ Default  |
 
 ---
 

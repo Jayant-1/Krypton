@@ -59,15 +59,17 @@ cd /media/jayant/Jayant/Code/Work\ Station/Hackathon/Krypton
    - Copy the URL shown
 
 2. **Update .env.production**
+
    ```yaml
    # Change this line:
    ALLOWED_ORIGINS=https://yourapp.vercel.app
-   
+
    # To your actual URL:
    ALLOWED_ORIGINS=https://krypton-abc123.vercel.app
    ```
 
 3. **Commit the change**
+
    ```bash
    git add .env.production
    git commit -m "Configure CORS for Vercel frontend: https://krypton-abc123.vercel.app"
@@ -83,17 +85,20 @@ cd /media/jayant/Jayant/Code/Work\ Station/Hackathon/Krypton
 ## Verify the Fix
 
 ### Step 1: Check diagnostics
+
 ```bash
 ./diagnose.sh
 ```
 
 Expected output:
+
 ```
 ✅ Backend responding (HTTP 200)
 ✅ CORS ALLOWED_ORIGINS matches your Vercel URL
 ```
 
 ### Step 2: Test from frontend
+
 1. Open your Vercel frontend
 2. Press F12 (DevTools)
 3. Network tab
@@ -119,13 +124,13 @@ All critical fixes committed and ready to push.
 
 ## Files Modified
 
-| File | Change | Commit |
-|------|--------|--------|
-| Dockerfile | CMD port 8000→8080 | 49e0f36 |
-| CORS_FIX_GUIDE.md | New guide | 10c3cd9 |
-| BACKEND_ISSUES_REPORT.md | New report | 10c3cd9 |
-| cors-fix.sh | Helper script | 10c3cd9 |
-| diagnose.sh | Diagnostics script | 8ccc3c0 |
+| File                     | Change             | Commit  |
+| ------------------------ | ------------------ | ------- |
+| Dockerfile               | CMD port 8000→8080 | 49e0f36 |
+| CORS_FIX_GUIDE.md        | New guide          | 10c3cd9 |
+| BACKEND_ISSUES_REPORT.md | New report         | 10c3cd9 |
+| cors-fix.sh              | Helper script      | 10c3cd9 |
+| diagnose.sh              | Diagnostics script | 8ccc3c0 |
 
 ---
 
@@ -150,16 +155,19 @@ All critical fixes committed and ready to push.
 ## Troubleshooting
 
 ### "Still getting CORS error after fix"
+
 1. Run: `./diagnose.sh`
 2. Check ALLOWED_ORIGINS matches exact Vercel URL
 3. Verify backend restarted in back4app
 4. Hard refresh frontend (Ctrl+Shift+R)
 
 ### "Backend now offline on 8080"
+
 - Dockerfile port fixed, but back4app needs restart
 - Go to back4app Dashboard → Restart
 
 ### "Getting 400 status code"
+
 - CORS header missing from response
 - Backend didn't recognize origin domain
 - Update ALLOWED_ORIGINS in back4app environment
@@ -169,18 +177,21 @@ All critical fixes committed and ready to push.
 ## Summary
 
 **Issues Found & Fixed:**
+
 1. ✅ Dockerfile port bug fixed (8000 → 8080)
 2. ✅ Backend diagnostics created
 3. ✅ CORS helper script provided
 4. ⏳ Awaiting Vercel URL to complete CORS setup
 
 **Backend Status:**
+
 - URL: https://krypton-ryngvlpb.b4a.run
 - Port: 8080 ✅
 - Health: 200 OK ✅
 - CORS: Needs configuration ⏳
 
 **Next Actions:**
+
 1. Identify your Vercel frontend URL
 2. Run: `./cors-fix.sh <your-vercel-url>`
 3. Update back4app ALLOWED_ORIGINS

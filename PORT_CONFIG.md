@@ -1,9 +1,11 @@
 # 🔧 Port Configuration Fix - Frontend ↔ Backend
 
 ## Problem
+
 Frontend was configured to reach backend on port 8000, but backend runs on port 8080.
 
 **Error Message:**
+
 ```
 ⚠ Cannot reach backend — is uvicorn running on port 8000?
 ```
@@ -15,11 +17,13 @@ Frontend was configured to reach backend on port 8000, but backend runs on port 
 ### Local Development: Port 8080
 
 **frontend/.env**
+
 ```
 VITE_API_BASE_URL=http://localhost:8080
 ```
 
 This matches where your backend server actually listens:
+
 ```bash
 # Backend running:
 uvicorn app.main:app --host 0.0.0.0 --port 8080
@@ -28,6 +32,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8080
 ### Production: back4app
 
 **frontend/.env.production**
+
 ```
 VITE_API_BASE_URL=https://krypton-ryngvlpb.b4a.run
 ```
@@ -38,11 +43,11 @@ This is your deployed back4app URL (HTTPS on port 443, implicit).
 
 ## Port Reference
 
-| Environment | Frontend | Backend | Port | Protocol |
-|-------------|----------|---------|------|----------|
-| **Local Dev** | http://localhost:5173 | http://localhost:8080 | 8080 | HTTP |
-| **Docker** | Not applicable | http://0.0.0.0:8080 | 8080 | HTTP |
-| **Production** | https://yourapp.vercel.app | https://krypton-ryngvlpb.b4a.run | 443 | HTTPS |
+| Environment    | Frontend                   | Backend                          | Port | Protocol |
+| -------------- | -------------------------- | -------------------------------- | ---- | -------- |
+| **Local Dev**  | http://localhost:5173      | http://localhost:8080            | 8080 | HTTP     |
+| **Docker**     | Not applicable             | http://0.0.0.0:8080              | 8080 | HTTP     |
+| **Production** | https://yourapp.vercel.app | https://krypton-ryngvlpb.b4a.run | 443  | HTTPS    |
 
 ---
 
@@ -95,22 +100,25 @@ Frontend inside docker also uses http://backend:8080 (service name resolution).
 ## Environment Variable Reference
 
 ### Development
+
 ```
 # frontend/.env
 VITE_API_BASE_URL=http://localhost:8080
 ```
 
 ### Production
+
 ```
 # frontend/.env.production
 VITE_API_BASE_URL=https://krypton-ryngvlpb.b4a.run
 ```
 
 ### Docker Compose
+
 ```yaml
 environment:
   - DATABASE_PATH=/app/data/research_agent.db
-  - PORT=8080  # Backend listens on this
+  - PORT=8080 # Backend listens on this
 ```
 
 ---
@@ -126,6 +134,7 @@ curl http://localhost:8080/api/health
 ```
 
 If connection refused, check:
+
 - ✅ Backend process is running
 - ✅ Port 8080 is not blocked
 - ✅ Environment variable set correctly
@@ -135,13 +144,13 @@ If connection refused, check:
 
 ## Configuration Files
 
-| File | Port | Purpose |
-|------|------|---------|
-| `frontend/.env` | 8080 | Local development |
-| `frontend/.env.production` | 443 (HTTPS) | Vercel production |
-| `Procfile` | 8080 | back4app deployment |
-| `Dockerfile` | 8080 | Container deployment |
-| `docker-compose.yml` | 8080 | Local Docker |
+| File                       | Port        | Purpose              |
+| -------------------------- | ----------- | -------------------- |
+| `frontend/.env`            | 8080        | Local development    |
+| `frontend/.env.production` | 443 (HTTPS) | Vercel production    |
+| `Procfile`                 | 8080        | back4app deployment  |
+| `Dockerfile`               | 8080        | Container deployment |
+| `docker-compose.yml`       | 8080        | Local Docker         |
 
 All aligned to port 8080 for consistency.
 
@@ -150,6 +159,7 @@ All aligned to port 8080 for consistency.
 ## Commit Reference
 
 Files updated to fix port mismatch:
+
 - `frontend/.env` - Changed from 8000 to 8080
 - `frontend/.env.production` - Added clarifying comment
 

@@ -15,6 +15,7 @@
 **Problem**: Dockerfile CMD started uvicorn on **port 8000** instead of 8080
 
 **Evidence**:
+
 ```dockerfile
 # WRONG (was):
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--log-level", "info"]
@@ -51,15 +52,15 @@ ALLOWED_ORIGINS=https://your-actual-vercel-url.vercel.app
 
 ### Port Configuration Status
 
-| Component | Setting | Status |
-|-----------|---------|--------|
-| Dockerfile HEALTHCHECK | :8080 | ✅ Correct |
-| Dockerfile CMD | --port 8080 | ✅ Fixed |
-| Dockerfile EXPOSE | 8080 | ✅ Correct |
-| Procfile | --port 8080 | ✅ Correct |
-| frontend/.env | :8080 | ✅ Correct |
-| frontend/.env.production | :443 (HTTPS) | ✅ Correct |
-| Backend listening | 8080 | ✅ Verified |
+| Component                | Setting      | Status      |
+| ------------------------ | ------------ | ----------- |
+| Dockerfile HEALTHCHECK   | :8080        | ✅ Correct  |
+| Dockerfile CMD           | --port 8080  | ✅ Fixed    |
+| Dockerfile EXPOSE        | 8080         | ✅ Correct  |
+| Procfile                 | --port 8080  | ✅ Correct  |
+| frontend/.env            | :8080        | ✅ Correct  |
+| frontend/.env.production | :443 (HTTPS) | ✅ Correct  |
+| Backend listening        | 8080         | ✅ Verified |
 
 ### Backend Health Status
 
@@ -79,11 +80,13 @@ ALLOWED_ORIGINS=https://your-actual-vercel-url.vercel.app
 ### 1. Helper Scripts
 
 **cors-fix.sh** - Automated CORS configuration
+
 ```bash
 ./cors-fix.sh https://your-vercel-url.vercel.app
 ```
 
 **diagnose.sh** - System diagnostics
+
 ```bash
 ./diagnose.sh
 ```
@@ -105,14 +108,14 @@ ALLOWED_ORIGINS=https://your-actual-vercel-url.vercel.app
 
 ## What's Fixed ✅
 
-| Item | Before | After | Status |
-|------|--------|-------|--------|
-| Dockerfile CMD port | 8000 | 8080 | ✅ FIXED |
-| Procfile port | 8080 | 8080 | ✅ Verified |
-| Frontend .env port | 8000 | 8080 | ✅ Fixed earlier |
-| HEALTHCHECK port | 8080 | 8080 | ✅ Verified |
-| EXPOSE port | 8080 | 8080 | ✅ Verified |
-| Documentation | Incomplete | Comprehensive | ✅ Complete |
+| Item                | Before     | After         | Status           |
+| ------------------- | ---------- | ------------- | ---------------- |
+| Dockerfile CMD port | 8000       | 8080          | ✅ FIXED         |
+| Procfile port       | 8080       | 8080          | ✅ Verified      |
+| Frontend .env port  | 8000       | 8080          | ✅ Fixed earlier |
+| HEALTHCHECK port    | 8080       | 8080          | ✅ Verified      |
+| EXPOSE port         | 8080       | 8080          | ✅ Verified      |
+| Documentation       | Incomplete | Comprehensive | ✅ Complete      |
 
 ---
 
@@ -124,6 +127,7 @@ ALLOWED_ORIGINS=https://your-actual-vercel-url.vercel.app
    - Copy the URL (e.g., `https://krypton-abc123.vercel.app`)
 
 2. **Run CORS Fix**
+
    ```bash
    ./cors-fix.sh https://your-actual-url.vercel.app
    ```
@@ -164,18 +168,22 @@ ddf095c Update documentation: fix Docker and Vercel guides, clarify port configu
 ## Error Messages Explained
 
 ### "CORS header 'Access-Control-Allow-Origin' missing"
+
 - ❌ Backend didn't recognize frontend domain
 - ✅ Fix: Update ALLOWED_ORIGINS to your Vercel URL
 
 ### "CORS request did not succeed"
+
 - ❌ Same root cause as above
 - ✅ Fix: Same as above
 
 ### "Status code: 400"
+
 - ❌ Backend received request but rejected due to CORS
 - ✅ Fix: Correct ALLOWED_ORIGINS setting
 
 ### "Backend offline on port 8000"
+
 - ❌ This was the Dockerfile bug (FIXED)
 - ✅ Backend now correctly starts on 8080
 
@@ -207,11 +215,13 @@ git status
 ## Next Steps (Action Plan)
 
 ### Phase 1: Identify Frontend URL (5 min)
+
 1. Open https://vercel.com/dashboard
 2. Find your project
 3. Copy deployment URL
 
 ### Phase 2: Configure CORS (2 min)
+
 ```bash
 ./cors-fix.sh https://your-url.vercel.app
 git add .env.production
@@ -219,11 +229,13 @@ git commit -m "Configure CORS for Vercel"
 ```
 
 ### Phase 3: Update back4app (2 min)
+
 1. Dashboard → Settings → Environment Variables
 2. Update `ALLOWED_ORIGINS`
 3. Redeploy
 
 ### Phase 4: Test (5 min)
+
 1. Open frontend
 2. DevTools Network tab
 3. Make API call
@@ -235,14 +247,14 @@ git commit -m "Configure CORS for Vercel"
 
 ## Key Files
 
-| File | Purpose | Last Modified |
-|------|---------|---|
-| Dockerfile | Container config | ✅ Fixed (port 8080) |
-| .env.production | Production config | ⏳ Needs CORS update |
-| app/main.py | CORS middleware | ✅ Ready (reads from env) |
-| cors-fix.sh | CORS configuration | ✅ New (ready to use) |
-| diagnose.sh | Diagnostics | ✅ New (runs successfully) |
-| RESOLUTION_GUIDE.md | This workflow | ✅ New |
+| File                | Purpose            | Last Modified              |
+| ------------------- | ------------------ | -------------------------- |
+| Dockerfile          | Container config   | ✅ Fixed (port 8080)       |
+| .env.production     | Production config  | ⏳ Needs CORS update       |
+| app/main.py         | CORS middleware    | ✅ Ready (reads from env)  |
+| cors-fix.sh         | CORS configuration | ✅ New (ready to use)      |
+| diagnose.sh         | Diagnostics        | ✅ New (runs successfully) |
+| RESOLUTION_GUIDE.md | This workflow      | ✅ New                     |
 
 ---
 
