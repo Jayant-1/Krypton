@@ -10,10 +10,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install Python dependencies to /tmp/local
+# Copy requirements and install Python dependencies
 COPY requirements.txt .
-RUN pip install --user --no-cache-dir -r requirements.txt && \
-    mv /root/.local /tmp/local
+RUN pip install --target /tmp/packages --no-cache-dir -r requirements.txt
 
 
 # Stage 2: Runtime (minimal production image)
@@ -31,15 +30,16 @@ RUN useradd -m -u 1000 appuser && \
     mkdir -p /app/data && \
     chown -R appuser:appuser /app
 
-# Copy Python dependencies from builder to app-accessible location
-COPY --from=builder --chown=appuser:appuser /tmp/local /app/.local
+# Copy Python packages from builder to app-accessible location
+COPY --from=builder --chown=appuser:appuser /tmp/packages /app/packages
 
 # Copy application code
 COPY --chown=appuser:appuser app/ ./app/
 COPY --chown=appuser:appuser requirements.txt .
 
 # Set environment variables with app-local path
-ENV PATH=/app/.local/bin:$PATH \
+ENV PATH=/app/packages/bin:$PATH \
+    PYTHONPATH=/app/packages:$PYTHONPATH \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PORT=8080 \
