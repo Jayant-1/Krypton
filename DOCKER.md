@@ -6,11 +6,11 @@ This guide explains how to containerize and deploy your Research Assistant AI Ag
 
 ## 📋 Files Overview
 
-| File | Purpose |
-|------|---------|
-| `Dockerfile` | Production container image definition |
-| `docker-compose.yml` | Local development and testing setup |
-| `.dockerignore` | Excludes unnecessary files from build |
+| File                 | Purpose                               |
+| -------------------- | ------------------------------------- |
+| `Dockerfile`         | Production container image definition |
+| `docker-compose.yml` | Local development and testing setup   |
+| `.dockerignore`      | Excludes unnecessary files from build |
 
 ---
 
@@ -34,6 +34,7 @@ Stage 2: Runtime
 ```
 
 **Benefits:**
+
 - ✅ Smaller final image size (~500MB vs ~800MB)
 - ✅ Faster deployment
 - ✅ No build tools in production (security)
@@ -129,6 +130,7 @@ docker ps
 ```
 
 Expected response:
+
 ```json
 {
   "status": "OK",
@@ -142,16 +144,19 @@ Expected response:
 ## 🔐 Security Features
 
 ### Non-Root User
+
 - Runs as `appuser` (UID 1000)
 - Prevents container escape vulnerabilities
 - Required by many security policies
 
 ### Minimal Base Image
+
 - Python 3.11.5-slim: ~40MB
 - Only includes Python + essential runtime
 - No unnecessary tools or libraries
 
 ### .dockerignore
+
 - Excludes `.env` files (no secrets in image)
 - Excludes `__pycache__` and Python artifacts
 - Excludes frontend and documentation
@@ -243,16 +248,19 @@ helm install krypton ./helm-chart
 ### Container won't start
 
 **Logs:**
+
 ```bash
 docker logs krypton-backend
 ```
 
 **Common issues:**
+
 - Missing environment variables → `ERROR: SECRET_KEY not set`
 - Port already in use → `Address already in use`
 - Missing dependencies → `ModuleNotFoundError: No module named 'fastapi'`
 
 **Fix:**
+
 ```bash
 # Rebuild after code changes
 docker-compose up -d --build
@@ -270,10 +278,11 @@ If port 8080 is already in use:
 ```yaml
 # In docker-compose.yml
 ports:
-  - "8081:8080"  # Map to different host port
+  - "8081:8080" # Map to different host port
 ```
 
 Or kill the existing process:
+
 ```bash
 lsof -i :8080
 kill -9 <PID>
@@ -307,6 +316,7 @@ docker run -it krypton-backend /bin/bash
 ## 📊 Image Size Optimization
 
 ### Current Size
+
 - Multi-stage Dockerfile: ~500MB
 - Single-stage (if used): ~800MB
 
@@ -344,10 +354,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Build Docker image
         run: docker build -t krypton-backend:${{ github.sha }} .
-      
+
       - name: Push to registry
         run: |
           docker tag krypton-backend:${{ github.sha }} docker.io/user/krypton:latest
@@ -376,12 +386,14 @@ Before deploying to production:
 ## 🎯 Next Steps
 
 1. **Test locally:**
+
    ```bash
    docker-compose up -d
    curl http://localhost:8080/api/health
    ```
 
 2. **Commit files:**
+
    ```bash
    git add Dockerfile docker-compose.yml .dockerignore
    git commit -m "Add Docker configuration"

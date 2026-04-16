@@ -9,7 +9,7 @@ Deploy your React + Vite frontend to Vercel in minutes.
 ✅ **Backend deployed** - krypton-ryngvlpb.b4a.run  
 ✅ **Frontend configured** - VITE_API_BASE_URL set  
 ✅ **Git repository** - Code pushed to GitHub  
-✅ **CORS configured** - Backend allows frontend origin  
+✅ **CORS configured** - Backend allows frontend origin
 
 ---
 
@@ -24,6 +24,7 @@ ls -la
 ```
 
 ### Check Configuration
+
 ```bash
 cat .env.production
 # Should show:
@@ -48,6 +49,7 @@ ls -la dist/ | head -10
 ```
 
 **Expected output:**
+
 - Build completes without errors
 - `dist/` folder created with `.js`, `.css`, `.html` files
 - File sizes reasonable (~100-200KB for JS bundle)
@@ -91,6 +93,7 @@ git push origin main
 ### Option B: Manual Deployment
 
 If you prefer not to connect GitHub:
+
 1. Go to **https://vercel.com**
 2. **New Project** → **Import from Git**
 3. Enter GitHub/GitLab URL
@@ -103,6 +106,7 @@ If you prefer not to connect GitHub:
 ### Framework & Build Settings
 
 After importing, Vercel should auto-detect:
+
 - **Framework**: Vite
 - **Build Command**: `npm run build`
 - **Output Directory**: `dist`
@@ -180,11 +184,13 @@ vercel
 ### Test Frontend
 
 **Your app is now live at:**
+
 ```
 https://yourapp.vercel.app
 ```
 
 Or if you have a custom domain:
+
 ```
 https://yourdomain.com
 ```
@@ -221,14 +227,14 @@ If you get CORS errors in browser, update backend ALLOWED_ORIGINS:
 
 ## 📊 Deployment Configuration
 
-| Setting | Value |
-|---------|-------|
-| **Framework** | Vite + React |
-| **Build Command** | `npm run build` |
-| **Output Directory** | `dist` |
-| **Root Directory** | `frontend` |
-| **Backend URL** | `https://krypton-ryngvlpb.b4a.run` |
-| **Node Version** | 18.x (default) |
+| Setting              | Value                              |
+| -------------------- | ---------------------------------- |
+| **Framework**        | Vite + React                       |
+| **Build Command**    | `npm run build`                    |
+| **Output Directory** | `dist`                             |
+| **Root Directory**   | `frontend`                         |
+| **Backend URL**      | `https://krypton-ryngvlpb.b4a.run` |
+| **Node Version**     | 18.x (default)                     |
 
 ---
 
@@ -264,6 +270,7 @@ git push origin main
 **Error**: `Error: ENOENT: no such file or directory`
 
 **Fix**:
+
 ```bash
 # Ensure root directory is set to: ./frontend
 # In Vercel Settings → Project Settings
@@ -274,6 +281,7 @@ git push origin main
 **Error**: `Cannot find module 'react'`
 
 **Fix**:
+
 ```bash
 # In Vercel Settings → Build & Development Settings
 # Install Command: npm install --legacy-peer-deps
@@ -284,6 +292,7 @@ git push origin main
 **Error**: "Cannot reach backend", CORS errors
 
 **Fix**:
+
 1. Verify `VITE_API_BASE_URL` in Vercel env vars
 2. Verify backend `ALLOWED_ORIGINS` includes Vercel URL
 3. Wait 2-3 minutes for caches to clear
@@ -294,6 +303,7 @@ git push origin main
 **Cause**: Build succeeded but app won't load
 
 **Fix**:
+
 1. Open browser DevTools → **Console** tab
 2. Look for JavaScript errors
 3. Check API calls are going to correct backend
@@ -325,14 +335,14 @@ Database: MongoDB (managed by back4app)
 
 ## 📝 Environment Setup Reference
 
-| Component | Environment | Value |
-|-----------|-------------|-------|
-| Frontend Dir | Vercel | ./frontend |
-| API URL | Vercel | https://krypton-ryngvlpb.b4a.run |
-| Backend | back4app | https://krypton-ryngvlpb.b4a.run |
-| Build Tool | Vite | npm run build |
-| Port (Dev) | Local | 5173 |
-| Port (Prod) | Vercel | 443 (HTTPS) |
+| Component    | Environment | Value                            |
+| ------------ | ----------- | -------------------------------- |
+| Frontend Dir | Vercel      | ./frontend                       |
+| API URL      | Vercel      | https://krypton-ryngvlpb.b4a.run |
+| Backend      | back4app    | https://krypton-ryngvlpb.b4a.run |
+| Build Tool   | Vite        | npm run build                    |
+| Port (Dev)   | Local       | 5173                             |
+| Port (Prod)  | Vercel      | 443 (HTTPS)                      |
 
 ---
 
