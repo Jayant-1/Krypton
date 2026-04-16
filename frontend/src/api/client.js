@@ -35,7 +35,7 @@ export async function apiFetch(path, options = {}) {
   } catch (networkErr) {
     throw new ApiError(
       0,
-      "Cannot reach backend — is uvicorn running on port 8000?",
+      "Cannot reach backend. Check API base URL, deployment status, and CORS ALLOWED_ORIGINS.",
     );
   }
 

@@ -24,9 +24,17 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def _parse_allowed_origins(raw_origins: str) -> list[str]:
+    """Parse comma-separated origins and normalize common formatting mistakes."""
+    if not raw_origins:
+        return []
+    return [origin.strip().rstrip("/") for origin in raw_origins.split(",") if origin.strip()]
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     cfg = get_settings()
+    allowed_origins = _parse_allowed_origins(cfg.allowed_origins)
     get_cache()
     await init_db()   # creates SQLite tables if not exist
     logger.info("=" * 60)
@@ -38,6 +46,7 @@ async def lifespan(app: FastAPI):
     logger.info("    Gemini   : %s", "✅ configured" if cfg.gemini_api_key else "❌ NOT configured")
     logger.info("    S2 Key   : %s", "✅ configured" if cfg.semantic_scholar_api_key else "⚪ using OpenAlex (free)")
     logger.info("    Docs     : http://127.0.0.1:8000/docs")
+    logger.info("    CORS     : %s", ",".join(allowed_origins) if allowed_origins else "⚠️ none configured")
     logger.info("=" * 60)
     yield
     logger.info("Server shutting down.")
@@ -45,6 +54,8 @@ async def lifespan(app: FastAPI):
 
 
 cfg = get_settings()
+allowed_origins = _parse_allowed_origins(cfg.allowed_origins)
+allow_all_origins = "*" in allowed_origins
 
 app = FastAPI(
     title="Research Assistant AI Agent",
@@ -76,8 +87,8 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=cfg.allowed_origins.split(",") if cfg.allowed_origins else [],
-    allow_credentials=True,
+    allow_origins=["*"] if allow_all_origins else allowed_origins,
+    allow_credentials=not allow_all_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
