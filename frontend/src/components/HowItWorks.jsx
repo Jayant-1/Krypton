@@ -135,7 +135,6 @@ export default function HowItWorks() {
         {/* Steps */}
         <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Connector lines (desktop only) */}
-          <div className="hidden md:block absolute top-[52px] left-[33.3%] right-[33.3%] h-px border-t border-dashed border-k-border z-0" />
           {STEPS.map((step, i) => (
             <StepCard key={step.number} step={step} index={i} />
           ))}

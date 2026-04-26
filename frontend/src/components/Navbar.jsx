@@ -72,7 +72,7 @@ export default function Navbar({
           {/* Right side */}
           <div className="flex items-center gap-3">
             {/* Profile button — only when logged in or has local profile */}
-            {hasProfile && user && (
+            {user && (
               <button
                 onClick={onOpenProfile}
                 title={
